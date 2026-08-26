@@ -109,9 +109,11 @@ body{
 .tab-bar-btn .tb-icon{font-size:1.2rem;line-height:1}
 .tab-bar-btn.active{color:var(--accent)}
 
-/* Mobile content containers */
-.mobile-page{display:none}
-.mobile-page.active{display:block}
+/* Mobile: side-panel as full page */
+.side-panel.mobile-visible{
+  display:flex!important;width:100%;position:static;margin:0;opacity:1;pointer-events:auto;
+  padding:16px 14px;padding-bottom:calc(var(--tabbar-h) + 16px);
+}
 
 /* ===================== STATS ===================== */
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -379,17 +381,18 @@ body{
 @media(max-width:768px){
   .app-layout{display:block;padding:0}
   .icon-strip{display:none!important}
-  .side-panel{display:none!important}
+  .side-panel{display:none;width:100%;position:static;margin:0;opacity:1}
+  .side-panel .panel-card:first-child{display:none}  /* hide collapse btn card */
+  .side-panel.mobile-visible{display:flex!important;padding:16px 14px;padding-bottom:calc(var(--tabbar-h) + 16px)}
   .main-panel{border-radius:0;box-shadow:none;margin:0;padding:16px 14px;padding-bottom:calc(var(--tabbar-h) + 16px)}
   .tab-bar{display:block}
   .help-fab{display:none}
-  .mobile-page{padding-bottom:calc(var(--tabbar-h) + 16px)}
 }
 @media(min-width:769px){
   .tab-bar{display:none!important}
-  .mobile-page{display:none!important}
-  /* ensure side content is in sidebar on desktop */
   .side-panel{display:flex!important}
+  .side-panel.mobile-visible{padding:0;padding-bottom:0}
+  .side-panel .panel-card:first-child{display:block}
 }
 </style>
 </head>
@@ -477,9 +480,6 @@ body{
   </div>
 </div>
 
-<!-- MOBILE: side panel content clone target (filled by JS) -->
-<div class="mobile-page" id="mobileOpsPage" style="padding:16px 14px"></div>
-
 <!-- MOBILE TAB BAR -->
 <div class="tab-bar" id="tabBar">
   <div class="tab-bar-inner">
@@ -538,7 +538,7 @@ var viewTabs=$("viewTabs"),exportBtn=$("exportBtn"),importBtn=$("importBtn"),imp
 var sTodayV=$("sTodayV"),sDoneV=$("sDoneV"),sOverV=$("sOverV");
 var calToggle=$("calToggle"),calPanel=$("calPanelCard"),calBody=$("calBody");
 var sidePanel=$("sidePanel"),iconStrip=$("iconStrip"),mainPanel=$("mainPanel");
-var tabBar=$("tabBar"),mobileOpsPage=$("mobileOpsPage");
+var tabBar=$("tabBar"),helpOverlay=$("helpOverlay");
 
 var currentPriority=1,openNotes={},activePopover=null,popoverTargetId=null;
 var today=new Date(),todayStr=fmtDate(today);
@@ -601,17 +601,19 @@ function setMobileTab(tab){
   var btns=tabBar.querySelectorAll(".tab-bar-btn");
   for(var i=0;i<btns.length;i++)btns[i].classList.toggle("active",btns[i].getAttribute("data-tab")===tab);
 
+  // simply toggle visibility via CSS classes — no DOM moving
   if(tab==="tasks"){
-    mainPanel.style.display="";mobileOpsPage.classList.remove("active");
-    $("helpOverlay").classList.remove("open");
+    mainPanel.style.display="";
+    sidePanel.classList.remove("mobile-visible");
+    helpOverlay.classList.remove("open");
   }else if(tab==="ops"){
     mainPanel.style.display="none";
-    mobileOpsPage.classList.add("active");
-    buildMobileOps();
-    $("helpOverlay").classList.remove("open");
+    sidePanel.classList.add("mobile-visible");
+    helpOverlay.classList.remove("open");
   }else if(tab==="help"){
-    mainPanel.style.display="";mobileOpsPage.classList.remove("active");
-    $("helpOverlay").classList.add("open");
+    mainPanel.style.display="";
+    sidePanel.classList.remove("mobile-visible");
+    helpOverlay.classList.add("open");
   }
 }
 tabBar.addEventListener("click",function(e){
@@ -619,36 +621,16 @@ tabBar.addEventListener("click",function(e){
   setMobileTab(btn.getAttribute("data-tab"));
 });
 
-/* Build mobile ops page by moving side panel content */
-function buildMobileOps(){
-  mobileOpsPage.innerHTML="";
-  // clone side panel children (skip collapse button card)
-  var cards=sidePanel.querySelectorAll(".panel-card");
-  for(var i=1;i<cards.length;i++){  // skip first card (collapse btn)
-    mobileOpsPage.appendChild(cards[i]);
-  }
-}
-function restoreSidePanel(){
-  // move cards back to sidePanel
-  var cards=mobileOpsPage.querySelectorAll(".panel-card");
-  for(var i=0;i<cards.length;i++){
-    sidePanel.appendChild(cards[i]);
-  }
-  mobileOpsPage.innerHTML="";
-}
-
 /* ==================== RESPONSIVE LISTENER ==================== */
 function handleResize(){
   if(isMobile.matches){
-    // ensure mobile mode
-    if(mobileTab==="ops")buildMobileOps();
-    else restoreSidePanel();
-    if(mobileTab==="tasks")mainPanel.style.display="";
+    // apply current mobile tab state
+    setMobileTab(mobileTab);
   }else{
-    // desktop mode — restore everything
-    restoreSidePanel();
+    // desktop: reset everything
     mainPanel.style.display="";
-    mobileOpsPage.classList.remove("active");
+    sidePanel.classList.remove("mobile-visible");
+    helpOverlay.classList.remove("open");
     applySidebar(sideCollapsed);
   }
 }
@@ -897,7 +879,7 @@ listWrap.addEventListener("click",function(e){
 });
 
 /* ==================== HELP MODAL ==================== */
-var helpFab=$("helpFab"),helpOverlay=$("helpOverlay"),helpClose=$("helpClose");
+var helpFab=$("helpFab"),helpClose=$("helpClose");
 helpFab.addEventListener("click",function(){helpOverlay.classList.add("open")});
 helpClose.addEventListener("click",function(){
   helpOverlay.classList.remove("open");
