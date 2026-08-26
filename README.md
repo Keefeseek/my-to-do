@@ -25,7 +25,7 @@
 
 ### 在线使用
 
-直接访问：**https://keefeseek.github.io/my-to-do/**
+直接访问：**[https://keefeseek.github.io/my-to-do/](https://keefeseek.github.io/my-todo-list/)**
 
 ### 手机添加到主屏幕
 
