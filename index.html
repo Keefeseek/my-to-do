@@ -376,6 +376,61 @@ body{
 .tl-tip-time{font-size:.74rem;color:var(--sub)}
 .tl-tip-note{font-size:.74rem;color:var(--sub);margin-top:4px;white-space:pre-wrap;max-height:80px;overflow:hidden}
 
+/* ===== HELP BUTTON & MODAL ===== */
+.help-fab{
+  position:fixed;bottom:24px;right:24px;z-index:900;
+  width:44px;height:44px;border-radius:50%;border:none;
+  background:var(--accent);color:#fff;font-size:1.2rem;font-weight:700;
+  cursor:pointer;box-shadow:0 4px 16px rgba(79,110,247,.35);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s,transform .15s,box-shadow .2s;
+}
+.help-fab:hover{background:var(--accent-hover);transform:scale(1.08);box-shadow:0 6px 24px rgba(79,110,247,.45)}
+.help-fab:active{transform:scale(.96)}
+
+.help-overlay{
+  position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.4);
+  display:none;align-items:center;justify-content:center;animation:fadeIn .2s ease;
+}
+.help-overlay.open{display:flex}
+.help-modal{
+  background:var(--card);border-radius:16px;box-shadow:var(--pop-shadow);
+  width:94%;max-width:560px;max-height:85vh;display:flex;flex-direction:column;
+  animation:popIn .25s ease;overflow:hidden;
+}
+.help-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.help-header h2{font-size:1.05rem;font-weight:700}
+.help-close{
+  width:32px;height:32px;border:none;border-radius:8px;background:var(--section-bg);
+  cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;
+  color:var(--sub);transition:background .15s,color .15s;
+}
+.help-close:hover{background:var(--border);color:var(--text)}
+.help-body{
+  padding:20px 22px;overflow-y:auto;font-size:.86rem;line-height:1.75;color:var(--text);
+}
+.help-body h3{font-size:.92rem;font-weight:700;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border);color:var(--accent)}
+.help-body h3:first-child{margin-top:0}
+.help-body p{margin:6px 0}
+.help-body table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.82rem}
+.help-body th,.help-body td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--border)}
+.help-body th{font-weight:700;color:var(--section-text);font-size:.74rem;text-transform:uppercase;letter-spacing:.3px}
+.help-body .tip{
+  background:var(--accent-light);border-left:3px solid var(--accent);
+  padding:8px 12px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.82rem;
+}
+.help-body .warn{
+  background:var(--overdue-bg);border-left:3px solid var(--danger);
+  padding:8px 12px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.82rem;
+}
+.help-body kbd{
+  display:inline-block;padding:1px 6px;border-radius:4px;font-size:.78rem;
+  background:var(--section-bg);border:1px solid var(--border);font-family:inherit;
+}
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:780px){
   .app-layout{flex-direction:column;padding:12px 8px;gap:12px}
@@ -466,6 +521,80 @@ body{
     <div class="view-pane active" id="listWrap"></div>
     <div class="view-pane" id="tlWrap"></div>
   </div>
+</div>
+
+<!-- HELP BUTTON -->
+<button class="help-fab" id="helpFab" title="使用指南">?</button>
+
+<!-- HELP MODAL -->
+<div class="help-overlay" id="helpOverlay">
+<div class="help-modal">
+  <div class="help-header">
+    <h2>📖 使用指南</h2>
+    <button class="help-close" id="helpClose">✕</button>
+  </div>
+  <div class="help-body">
+
+<h3>➕ 添加任务</h3>
+<table>
+  <tr><th>步骤</th><th>操作</th></tr>
+  <tr><td>1</td><td>在左侧输入框输入任务名称</td></tr>
+  <tr><td>2</td><td>选择紧急程度：🔴 紧急 / 🟡 一般 / 🟢 不急</td></tr>
+  <tr><td>3</td><td>选择日期（默认今天），可选填开始和结束时间</td></tr>
+  <tr><td>4</td><td>点击「➕ 添加任务」或按 <kbd>Enter</kbd></td></tr>
+</table>
+<div class="tip">💡 不填时间则为「全天事项」，会显示在日程表顶部</div>
+
+<h3>✅ 管理任务</h3>
+<table>
+  <tr><th>操作</th><th>方法</th></tr>
+  <tr><td>完成 / 取消完成</td><td>点击任务左侧的 ⭕ 圆圈</td></tr>
+  <tr><td>修改紧急程度</td><td>点击紧急标签（如「🔴 紧急」），弹出切换选项</td></tr>
+  <tr><td>添加备注</td><td>点击任务右侧的 📄 图标，展开备注框</td></tr>
+  <tr><td>删除任务</td><td>鼠标悬停 → 点击右侧 ✕ → 确认删除</td></tr>
+</table>
+
+<h3>📅 日历</h3>
+<p>点击左侧「📅 日历」展开月历视图：</p>
+<table>
+  <tr><th>操作</th><th>效果</th></tr>
+  <tr><td>点击某一天</td><td>筛选该天的任务</td></tr>
+  <tr><td>再次点击同一天</td><td>取消筛选，显示全部</td></tr>
+  <tr><td>◀ ▶ 箭头</td><td>切换月份</td></tr>
+  <tr><td>「显示全部」按钮</td><td>清除日期筛选</td></tr>
+</table>
+<p>日历中有任务的日期会显示彩色圆点（红=紧急 黄=一般 绿=不急）。</p>
+
+<h3>🕐 日程表视图</h3>
+<p>点击右侧顶部「🕐 日程表」标签可切换到时间线视图：</p>
+<p>• 时间轴覆盖 6:00 ~ 24:00<br>
+• 任务显示为彩色色块，高度对应时长<br>
+• 红色横线标记当前时刻<br>
+• 鼠标悬停色块查看任务详情<br>
+• 跨天任务会在两天各自显示</p>
+
+<h3>📊 统计面板</h3>
+<p>左上角三个卡片实时显示：</p>
+<p>🔵 <strong>今日任务</strong> — 今天的任务数 &nbsp;&nbsp; 🟢 <strong>已完成</strong> — 总完成数 &nbsp;&nbsp; 🔴 <strong>已逾期</strong> — 过期未完成数</p>
+
+<h3>🌙 深色模式</h3>
+<p>点击右上角主题开关（☀️ / 🌙）切换，会自动记住你的选择。</p>
+
+<h3>💾 数据备份</h3>
+<table>
+  <tr><th>按钮</th><th>功能</th></tr>
+  <tr><td>📤 导出</td><td>下载 JSON 备份文件到本地</td></tr>
+  <tr><td>📥 导入</td><td>选择 JSON 文件恢复数据</td></tr>
+</table>
+<div class="warn">⚠️ 导入会覆盖当前所有数据，请先导出备份！</div>
+
+<h3>❓ 常见问题</h3>
+<p><strong>数据存在哪里？</strong><br>数据保存在你浏览器的本地存储中，不会上传到任何服务器。</p>
+<p><strong>换设备数据还在吗？</strong><br>不同设备/浏览器数据不互通，请用导出/导入功能迁移。</p>
+<p><strong>清缓存会丢数据吗？</strong><br>会。建议定期使用「📤 导出」备份数据。</p>
+
+  </div>
+</div>
 </div>
 
 <script>
@@ -795,6 +924,12 @@ listWrap.addEventListener("click",function(e){
     if(ar.classList.contains("open")){ar.classList.remove("open");delete openNotes[id4]}
     else{ar.classList.add("open");openNotes[id4]=true;var ta=ar.querySelector("textarea");if(ta)setTimeout(function(){ta.focus()},180)}}
 });
+
+/* == HELP MODAL == */
+var helpFab=$("helpFab"),helpOverlay=$("helpOverlay"),helpClose=$("helpClose");
+helpFab.addEventListener("click",function(){helpOverlay.classList.add("open")});
+helpClose.addEventListener("click",function(){helpOverlay.classList.remove("open")});
+helpOverlay.addEventListener("click",function(e){if(e.target===helpOverlay)helpOverlay.classList.remove("open")});
 
 /* == INIT == */
 setView(currentView);
