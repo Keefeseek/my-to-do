@@ -94,19 +94,20 @@ body{
 /* ===================== MOBILE TAB BAR ===================== */
 .tab-bar{
   display:none;position:fixed;bottom:0;left:0;right:0;z-index:800;
-  height:var(--tabbar-h);background:var(--card);border-top:1px solid var(--border);
+  background:var(--card);border-top:1px solid var(--border);
   box-shadow:0 -2px 12px rgba(0,0,0,.06);
+  padding-bottom:env(safe-area-inset-bottom,0px);
 }
 .tab-bar-inner{
-  display:flex;height:100%;max-width:500px;margin:0 auto;
+  display:flex;height:var(--tabbar-h);max-width:500px;margin:0 auto;
 }
 .tab-bar-btn{
   flex:1;border:none;background:transparent;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  color:var(--sub);font-size:.65rem;font-weight:600;transition:color .15s;
-  padding:4px 0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  color:var(--sub);font-size:.68rem;font-weight:600;transition:color .15s;
+  padding:6px 0;-webkit-tap-highlight-color:transparent;
 }
-.tab-bar-btn .tb-icon{font-size:1.2rem;line-height:1}
+.tab-bar-btn .tb-icon{font-size:1.25rem;line-height:1}
 .tab-bar-btn.active{color:var(--accent)}
 
 /* Mobile: side-panel as full page */
@@ -274,7 +275,7 @@ body{
 .task-item.done[data-p="1"]{border-left-color:color-mix(in srgb,var(--normal) 40%,transparent)}
 .task-item.done[data-p="2"]{border-left-color:color-mix(in srgb,var(--low) 40%,transparent)}
 .task-row{display:flex;align-items:center;gap:7px;padding:9px 11px}
-.task-body{display:flex;align-items:center;gap:7px;flex:1;min-width:0}
+.task-body{display:flex;align-items:center;gap:7px;flex:1;min-width:0;flex-wrap:wrap}
 .task-actions{display:flex;align-items:center;gap:2px;flex-shrink:0}
 .priority-tag{font-size:10px;padding:2px 6px;border-radius:6px;font-weight:600;white-space:nowrap;flex-shrink:0;line-height:1.5;cursor:pointer;transition:filter .15s}
 .priority-tag:hover{filter:brightness(1.12)}
@@ -378,21 +379,141 @@ body{
 .help-body kbd{display:inline-block;padding:1px 6px;border-radius:4px;font-size:.78rem;background:var(--section-bg);border:1px solid var(--border);font-family:inherit}
 
 /* ===================== RESPONSIVE ===================== */
+
+/* -- Tablet: 769-1024px -- */
+@media(min-width:769px) and (max-width:1024px){
+  .app-layout{max-width:100%;padding:16px 10px}
+  .side-panel{width:260px;gap:12px;margin-left:10px}
+  .main-panel{padding:20px 16px;margin-left:12px}
+  .panel-card{padding:14px}
+  .stat-val{font-size:1.15rem}
+  .stat-lbl{font-size:.62rem}
+  .stats-grid{gap:6px}
+  .header h1{font-size:1.2rem}
+}
+
+/* -- Mobile: <=768px -- */
 @media(max-width:768px){
   .app-layout{display:block;padding:0}
   .icon-strip{display:none!important}
-  .side-panel{display:none;width:100%;position:static;margin:0;opacity:1}
-  .side-panel .panel-card:first-child{display:none}  /* hide collapse btn card */
-  .side-panel.mobile-visible{display:flex!important;padding:16px 14px;padding-bottom:calc(var(--tabbar-h) + 16px)}
-  .main-panel{border-radius:0;box-shadow:none;margin:0;padding:16px 14px;padding-bottom:calc(var(--tabbar-h) + 16px)}
-  .tab-bar{display:block}
+  .side-panel{display:none;width:100%;position:static;margin:0;opacity:1;overflow-y:auto}
+  .side-panel .panel-card:first-child{display:none}
+  .side-panel.mobile-visible{
+    display:flex!important;padding:16px 12px;
+    padding-bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px) + 16px);
+  }
+  .main-panel{
+    border-radius:0;box-shadow:none;margin:0;padding:14px 12px;
+    padding-bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px) + 16px);
+  }
+  .tab-bar{display:block;padding-bottom:env(safe-area-inset-bottom,0px)}
   .help-fab{display:none}
+
+  /* header */
+  .header h1{font-size:1.15rem}
+  .header{margin-bottom:12px}
+
+  /* stats */
+  .stats-grid{gap:6px}
+  .stat-val{font-size:1.1rem}
+  .stat-lbl{font-size:.62rem}
+  .stat-box{padding:10px 6px}
+
+  /* input */
+  .input-section input[type="text"]{padding:10px 12px;font-size:.88rem}
+  .input-controls{gap:5px}
+  .ctrl-input{padding:7px 8px;font-size:.82rem}
+  .p-opt{width:28px;height:28px;font-size:12px}
+  .add-btn{padding:11px 0;font-size:.88rem}
+
+  /* view tabs */
+  .view-tabs{margin-bottom:12px}
+  .view-tab{padding:8px 0;font-size:.78rem}
+
+  /* task items — wrap date label below text */
+  .task-row{flex-wrap:wrap;gap:6px;padding:10px}
+  .task-body{gap:6px}
+  .task-text{font-size:.86rem}
+  .priority-tag{font-size:9px;padding:2px 5px}
+  .task-date-label{font-size:.66rem}
+  /* show delete button always on touch (no hover) */
+  .del-btn{opacity:.6}
+
+  /* calendar */
+  .cal-day{min-height:36px;font-size:.8rem;padding:6px 2px}
+  .cal-toggle{padding:12px 14px;font-size:.86rem}
+  .cal-body{padding:0 14px}
+  .cal-panel.open .cal-body{padding:0 14px 14px}
+
+  /* timeline */
+  .tl-hour-label{height:48px;font-size:.65rem}
+  .tl-hour-cell{height:48px}
+  .tl-event{font-size:.72rem;padding:3px 6px}
+  .tl-allday-item{font-size:.8rem;padding:7px 10px}
+
+  /* help modal */
+  .help-modal{max-height:80vh;width:96%}
+  .help-header{padding:14px 16px}
+  .help-body{padding:14px 16px;font-size:.84rem}
+  .help-body table{font-size:.78rem}
+  .help-body th,.help-body td{padding:5px 6px}
 }
+
+/* -- Small phones: <=380px -- */
+@media(max-width:380px){
+  .main-panel{padding:10px 8px;padding-bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px) + 12px)}
+  .side-panel.mobile-visible{padding:12px 8px;padding-bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom,0px) + 12px)}
+
+  .header h1{font-size:1.05rem}
+  .stat-val{font-size:.95rem}
+  .stat-lbl{font-size:.58rem}
+  .stat-box{padding:8px 4px}
+  .stats-grid{gap:4px}
+
+  .task-row{padding:8px 7px}
+  .task-text{font-size:.82rem}
+  .priority-tag{font-size:8px;padding:1px 4px}
+  .task-date-label{font-size:.62rem}
+  .check{width:18px;height:18px}
+  .check svg{width:10px;height:10px}
+  .icon-btn{width:22px;height:22px}
+  .icon-btn svg{width:12px;height:12px}
+
+  .p-opt{width:26px;height:26px;font-size:11px}
+  .ctrl-input{font-size:.78rem;padding:6px 6px}
+  .ctrl-label{font-size:.72rem}
+  .add-btn{font-size:.84rem;padding:10px 0}
+
+  .view-tab{font-size:.72rem;padding:6px 0}
+
+  .tab-bar-btn{font-size:.6rem}
+  .tab-bar-btn .tb-icon{font-size:1rem}
+
+  .tl-hour-label{height:42px;font-size:.6rem}
+  .tl-hour-cell{height:42px}
+  .tl-grid{grid-template-columns:40px 1fr}
+
+  .cal-day{min-height:32px;font-size:.74rem}
+  .cal-dow{font-size:.62rem}
+}
+
+/* -- Desktop only -- */
 @media(min-width:769px){
   .tab-bar{display:none!important}
   .side-panel{display:flex!important}
   .side-panel.mobile-visible{padding:0;padding-bottom:0}
   .side-panel .panel-card:first-child{display:block}
+}
+
+/* -- Large desktop: >1200px -- */
+@media(min-width:1200px){
+  .app-layout{max-width:1160px}
+  .side-panel{width:320px}
+  .main-panel{padding:28px}
+  .stat-val{font-size:1.5rem}
+  .header h1{font-size:1.45rem}
+  .task-text{font-size:.92rem}
+  .task-row{padding:10px 14px;gap:8px}
 }
 </style>
 </head>
